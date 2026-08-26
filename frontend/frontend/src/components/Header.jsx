@@ -34,7 +34,7 @@ function Header() {
           {bagCount > 0 && <span className="badge">{bagCount}</span>}
         </button>
 
-        {/* <button className="admin-btn">Admin</button> */}
+        <button className="admin-btn">Admin</button>
       </div>
     </header>
   );
