@@ -11,8 +11,9 @@ const [showConfirmPw, setShowConfirmPw] = useState(false);
 const [errors, setErrors] = useState({});
 const [role, setRole] = useState("");
 const [agreedToTerms, setAgreedToTerms] = useState(false);
+const [name, setName] = useState("");
 const [stayLoggedIn, setStayLoggedIn] = useState(false);
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
   e.preventDefault();
 
   if (password !== confirmPassword) {
@@ -25,14 +26,45 @@ const [stayLoggedIn, setStayLoggedIn] = useState(false);
     return;
   }
 
-  console.log({ email, password, role, stayLoggedIn });
+  try {
+    const response = await fetch("http://localhost:5000/api/buyers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name,email, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.error || "Something went wrong. Please try again.");
+      return;
+    }
+
+    console.log("Account created:", data);
+    alert("Account created successfully!");
+  } catch (error) {
+    console.error("Signup failed:", error);
+    alert("Could not connect to the server. Please try again.");
+  }
 };
 
   return (
+    
     <div className="signup-container">
       <h1>Create Your Account</h1>
 
-      <form onSubmit={handleSubmit}>
+     <form onSubmit={handleSubmit}>
+        <div className="signup-field">
+          <label>Name</label>
+          <input
+            type="text"
+            placeholder="Enter your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+
         <div className="signup-field">
           <label>Email</label>
           <input
