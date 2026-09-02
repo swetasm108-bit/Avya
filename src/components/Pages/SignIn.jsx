@@ -1,23 +1,59 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import "./Signup.css"; // reuse the same styling
-
+import { useNavigate } from "react-router-dom";
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
+  useEffect(() => {
+  const saved = JSON.parse(localStorage.getItem("savedCredentials") || "null");
+  if (saved) {
+    setEmail(saved.email);
+    setPassword(saved.password);
+    setStayLoggedIn(true);
+  }
+}, []);
+  const navigate = useNavigate();
+  
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log({ email, password, stayLoggedIn });
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await fetch("http://localhost:5000/api/buyers/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.error || "Login failed. Please try again.");
+      return;
+    }
+
+  localStorage.setItem("user", JSON.stringify(data));
+
+if (stayLoggedIn) {
+  localStorage.setItem("savedCredentials", JSON.stringify({ email, password }));
+} else {
+  localStorage.removeItem("savedCredentials");
+}
+ navigate("/");
+  } catch (error) {
+    console.error("Login failed:", error);
+    alert("Could not connect to the server. Please try again.");
+  }
+};
 
   return (
+    
     <div className="signup-container">
       <h1>Login to Your Account</h1>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} autoComplete="off">
         <div className="signup-field">
           <label>Email</label>
           <input
@@ -25,6 +61,7 @@ function SignIn() {
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete="off"
             required
           />
         </div>
@@ -38,6 +75,7 @@ function SignIn() {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
               style={{ paddingRight: 32, width: "100%" }}
               required
             />
@@ -72,7 +110,7 @@ function SignIn() {
         <button type="submit" className="signup-submit">
           Login
         </button>
-      </form>
+    </form>
     </div>
   );
 }

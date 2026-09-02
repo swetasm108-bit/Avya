@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import "./Signup.css";
-
+import { useNavigate } from "react-router-dom";
 function Signup() {
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
@@ -13,6 +13,7 @@ const [role, setRole] = useState("");
 const [agreedToTerms, setAgreedToTerms] = useState(false);
 const [name, setName] = useState("");
 const [stayLoggedIn, setStayLoggedIn] = useState(false);
+const navigate = useNavigate();
   const handleSubmit = async (e) => {
   e.preventDefault();
 
@@ -42,6 +43,7 @@ const [stayLoggedIn, setStayLoggedIn] = useState(false);
 
     console.log("Account created:", data);
     alert("Account created successfully!");
+    navigate("/");
   } catch (error) {
     console.error("Signup failed:", error);
     alert("Could not connect to the server. Please try again.");

@@ -21,3 +21,47 @@
   background: #2a2020;
   color: #fff;
 }
+.account-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.account-greeting {
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.account-menu {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.account-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: left;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.account-menu-item:last-child {
+  border-bottom: none;
+}
+
+.account-menu-item:hover {
+  background: #fbf7f2;
+}
+
+.account-logout {
+  color: #c2410c;
+  font-weight: 600;
+}
