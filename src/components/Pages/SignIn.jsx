@@ -7,51 +7,73 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
+  const [role, setRole] = useState("buyer");
+
   useEffect(() => {
-  const saved = JSON.parse(localStorage.getItem("savedCredentials") || "null");
-  if (saved) {
-    setEmail(saved.email);
-    setPassword(saved.password);
-    setStayLoggedIn(true);
-  }
-}, []);
+    const saved = JSON.parse(localStorage.getItem("savedCredentials") || "null");
+    if (saved) {
+      setEmail(saved.email);
+      setPassword(saved.password);
+      setStayLoggedIn(true);
+    }
+  }, []);
   const navigate = useNavigate();
   
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await fetch("http://localhost:5000/api/buyers/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    e.preventDefault();
+    try {
+      const endpoint = role === "seller" ? "sellers" : "buyers";
 
-    const data = await response.json();
+      const response = await fetch(`http://localhost:5000/api/${endpoint}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!response.ok) {
-      alert(data.error || "Login failed. Please try again.");
-      return;
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Login failed. Please try again.");
+        return;
+      }
+
+      localStorage.setItem("user", JSON.stringify(data));
+
+      if (stayLoggedIn) {
+        localStorage.setItem("savedCredentials", JSON.stringify({ email, password }));
+      } else {
+        localStorage.removeItem("savedCredentials");
+      }
+      navigate("/");
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Could not connect to the server. Please try again.");
     }
-
-  localStorage.setItem("user", JSON.stringify(data));
-
-if (stayLoggedIn) {
-  localStorage.setItem("savedCredentials", JSON.stringify({ email, password }));
-} else {
-  localStorage.removeItem("savedCredentials");
-}
- navigate("/");
-  } catch (error) {
-    console.error("Login failed:", error);
-    alert("Could not connect to the server. Please try again.");
-  }
-};
+  };
 
   return (
     
     <div className="signup-container">
       <h1>Login to Your Account</h1>
+
+      <div className="signup-role-options">
+        <button
+          type="button"
+          className={`signup-role-btn ${role === "buyer" ? "active" : ""}`}
+          onClick={() => setRole("buyer")}
+        >
+          🛍️ Buyer
+        </button>
+
+        <button
+          type="button"
+          className={`signup-role-btn ${role === "seller" ? "active" : ""}`}
+          onClick={() => setRole("seller")}
+        >
+          🏪 Seller
+        </button>
+      </div>
 
       <form onSubmit={handleSubmit} autoComplete="off">
         <div className="signup-field">
@@ -110,7 +132,7 @@ if (stayLoggedIn) {
         <button type="submit" className="signup-submit">
           Login
         </button>
-    </form>
+      </form>
     </div>
   );
 }

@@ -28,7 +28,9 @@ const navigate = useNavigate();
   }
 
   try {
-    const response = await fetch("http://localhost:5000/api/buyers", {
+    const endpoint = role === "seller" ? "sellers" : "buyers";
+
+    const response = await fetch(`http://localhost:5000/api/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name,email, password }),
@@ -43,6 +45,11 @@ const navigate = useNavigate();
 
     console.log("Account created:", data);
     alert("Account created successfully!");
+    // Log the new buyer in immediately
+    localStorage.setItem("user", JSON.stringify(data));
+
+    // Clear any old saved sign-in credentials from a previous account
+    localStorage.removeItem("savedCredentials");
     navigate("/");
   } catch (error) {
     console.error("Signup failed:", error);
