@@ -25,6 +25,7 @@ const user = JSON.parse(
     { icon: <MapPin size={20} />, label: "Address", path: "/account/address" },
     { icon: <Wallet size={20} />, label: "Wallet", path: "/account/wallet" },
     { icon: <Lock size={20} />, label: "Login & Security", path: "/account/security" },
+     { icon: <Lock size={20} />, label: "Settings", path: "/account/settings" },
   ];
 
   // Logged-in view
