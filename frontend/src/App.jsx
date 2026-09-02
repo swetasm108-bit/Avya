@@ -12,7 +12,7 @@ function App() {
         <Routes>
           <Route path="/" element={<h2>Jai Shree Ganesha</h2>} />
           <Route path="/shop" element={<h2>Shop page — coming soon</h2>} />
-          <Route path="/wishlist" element={<h2>Wishlist page — coming soon</h2>} />
+          <Route path="/wishlist" element={<h2>Wishlist page — coming soon we are launching it soon</h2>} />
           <Route path="/account" element={<Account />} />
         </Routes>
       </main>
