@@ -62,7 +62,7 @@ const navigate = useNavigate();
     <div className="signup-container">
       <h1>Create Your Account</h1>
 
-     <form onSubmit={handleSubmit}>
+     <form onSubmit={handleSubmit} autoComplete="off">
         <div className="signup-field">
           <label>Name</label>
           <input
@@ -70,6 +70,7 @@ const navigate = useNavigate();
             placeholder="Enter your name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            autoComplete="off"
             required
           />
         </div>
@@ -81,6 +82,7 @@ const navigate = useNavigate();
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete="off"
             required
           />
         </div>
@@ -100,6 +102,7 @@ const navigate = useNavigate();
                 setErrors((p) => ({ ...p, password: "" }));
               }}
               style={{ paddingRight: 32, width: "100%" }}
+              autoComplete="off"
               required
             />
             <button
@@ -130,6 +133,7 @@ const navigate = useNavigate();
                 setErrors((p) => ({ ...p, confirmPassword: "" }));
               }}
               style={{ paddingRight: 32, width: "100%" }}
+              autoComplete="off"
               required
             />
             <button
