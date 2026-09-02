@@ -1,6 +1,7 @@
 import { useState } from "react";
 import logo from "../assets/logo.png";
 import "./Header.css";
+import { NavLink } from "react-router-dom";
 
 function Header() {
   const [wishlistCount] = useState(2);
@@ -12,11 +13,19 @@ function Header() {
         <img src={logo} alt="Avya" className="header-logo-img" />
       </div>
 
-      <nav className="header-nav">
-        <a href="/" className="nav-link active">Home</a>
-        <a href="/shop" className="nav-link">Shop</a>
-        <a href="/wishlist" className="nav-link">Wishlist</a>
-        <a href="/account" className="nav-link">Account</a>
+     <nav className="header-nav">
+        <NavLink to="/" end className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+          Home
+        </NavLink>
+        <NavLink to="/shop" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+          Shop
+        </NavLink>
+        <NavLink to="/wishlist" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+          Wishlist
+        </NavLink>
+        <NavLink to="/account" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+          Account
+        </NavLink>
       </nav>
 
       <div className="header-actions">
