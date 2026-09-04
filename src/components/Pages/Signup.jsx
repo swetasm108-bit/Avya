@@ -3,6 +3,8 @@ import { Eye, EyeOff, Lock } from "lucide-react";
 import "./Signup.css";
 import { useNavigate } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,7 +48,7 @@ function Signup() {
     try {
       const endpoint = role === "seller" ? "sellers" : "buyers";
 
-      const response = await fetch(`https://avya-backend-nomq.onrender.com/api/${endpoint}`, {
+      const response = await fetch(`${API_URL}/api/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
@@ -78,7 +80,7 @@ function Signup() {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`https://avya-backend-nomq.onrender.com/api/buyers/verify-otp`, {
+      const response = await fetch(`${API_URL}/api/buyers/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: otpEmail, otp }),
@@ -102,7 +104,7 @@ function Signup() {
   const handleResendOtp = async () => {
     if (resendCooldown > 0) return;
     try {
-      const response = await fetch(`https://avya-backend-nomq.onrender.com/api/buyers/resend-otp`, {
+      const response = await fetch(`${API_URL}/api/buyers/resend-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: otpEmail }),

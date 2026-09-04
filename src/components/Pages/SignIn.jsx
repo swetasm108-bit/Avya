@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import "./Signup.css"; // reuse the same styling
 import { useNavigate } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +28,7 @@ function SignIn() {
     try {
       const endpoint = role === "seller" ? "sellers" : "buyers";
 
-      const response = await fetch(`https://avya-backend-nomq.onrender.com/api/${endpoint}/login`, {
+      const response = await fetch(`${API_URL}/api/${endpoint}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
