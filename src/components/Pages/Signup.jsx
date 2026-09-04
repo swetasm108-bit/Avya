@@ -2,67 +2,192 @@ import { useState } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import "./Signup.css";
 import { useNavigate } from "react-router-dom";
+
 function Signup() {
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
-const [showPw, setShowPw] = useState(false);
-const [confirmPassword, setConfirmPassword] = useState("");
-const [showConfirmPw, setShowConfirmPw] = useState(false);
-const [errors, setErrors] = useState({});
-const [role, setRole] = useState("");
-const [agreedToTerms, setAgreedToTerms] = useState(false);
-const [name, setName] = useState("");
-const [stayLoggedIn, setStayLoggedIn] = useState(false);
-const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [role, setRole] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [name, setName] = useState("");
+  const [stayLoggedIn, setStayLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  // OTP step state
+  const [otpStep, setOtpStep] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpEmail, setOtpEmail] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useState(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (password !== confirmPassword) {
-    setErrors((p) => ({ ...p, confirmPassword: "Passwords do not match." }));
-    return;
-  }
-
-  if (!agreedToTerms) {
-    alert("Please agree to the privacy policy and terms of use.");
-    return;
-  }
-
-  try {
-    const endpoint = role === "seller" ? "sellers" : "buyers";
-
-    const response = await fetch(`http://localhost:5000/api/${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name,email, password }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      alert(data.error || "Something went wrong. Please try again.");
+    if (password !== confirmPassword) {
+      setErrors((p) => ({ ...p, confirmPassword: "Passwords do not match." }));
       return;
     }
 
-    console.log("Account created:", data);
-    alert("Account created successfully!");
-    // Log the new buyer in immediately
-    localStorage.setItem("user", JSON.stringify(data));
+    if (!agreedToTerms) {
+      alert("Please agree to the privacy policy and terms of use.");
+      return;
+    }
 
-    // Clear any old saved sign-in credentials from a previous account
+    try {
+      const endpoint = role === "seller" ? "sellers" : "buyers";
+
+      const response = await fetch(`http://localhost:5000/api/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Something went wrong. Please try again.");
+        return;
+      }
+
+      // If backend sent an OTP (buyer signup has MFA), show OTP step
+      if (data.message && data.message.toLowerCase().includes("otp")) {
+        setOtpEmail(data.email);
+        setOtpStep(true);
+        setResendCooldown(30);
+        return;
+      }
+
+      // Otherwise (e.g. seller, no MFA yet) — log in directly as before
+      completeSignup(data);
+    } catch (error) {
+      console.error("Signup failed:", error);
+      alert("Could not connect to the server. Please try again.");
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`http://localhost:5000/api/buyers/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: otpEmail, otp }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Invalid OTP. Please try again.");
+        return;
+      }
+
+      alert("Email verified! Account created successfully.");
+      completeSignup(data);
+    } catch (error) {
+      console.error("OTP verification failed:", error);
+      alert("Could not connect to the server. Please try again.");
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0) return;
+    try {
+      const response = await fetch(`http://localhost:5000/api/buyers/resend-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: otpEmail }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Could not resend OTP.");
+        return;
+      }
+
+      alert("A new OTP has been sent to your email.");
+      setResendCooldown(30);
+    } catch (error) {
+      console.error("Resend OTP failed:", error);
+      alert("Could not connect to the server. Please try again.");
+    }
+  };
+
+  const completeSignup = (data) => {
+    localStorage.setItem("user", JSON.stringify(data));
     localStorage.removeItem("savedCredentials");
     navigate("/");
-  } catch (error) {
-    console.error("Signup failed:", error);
-    alert("Could not connect to the server. Please try again.");
-  }
-};
+  };
 
+  // ===== OTP SCREEN =====
+  if (otpStep) {
+    return (
+      <div className="signup-container">
+        <h1>Verify Your Email</h1>
+        <p style={{ fontSize: 14, marginBottom: 16 }}>
+          We sent a 6-digit code to <b>{otpEmail}</b>
+        </p>
+
+        <form onSubmit={handleVerifyOtp} autoComplete="off">
+          <div className="signup-field">
+            <label>OTP Code</label>
+            <input
+              type="text"
+              placeholder="Enter 6-digit code"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              maxLength={6}
+              required
+            />
+          </div>
+
+          <button type="submit" className="signup-submit">
+            Verify & Continue
+          </button>
+        </form>
+
+        <div style={{ textAlign: "center", marginTop: 16 }}>
+          {resendCooldown > 0 ? (
+            <span style={{ fontSize: 13, color: "#999" }}>
+              Resend available in {resendCooldown}s
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={handleResendOtp}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#c2410c",
+                fontSize: 13,
+                cursor: "pointer",
+                textDecoration: "underline",
+              }}
+            >
+              Resend OTP
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ===== SIGNUP FORM (unchanged) =====
   return (
-    
     <div className="signup-container">
       <h1>Create Your Account</h1>
 
-     <form onSubmit={handleSubmit} autoComplete="off">
+      <form onSubmit={handleSubmit} autoComplete="off">
         <div className="signup-field">
           <label>Name</label>
           <input
@@ -87,11 +212,9 @@ const navigate = useNavigate();
           />
         </div>
 
-                {/* PASSWORD */}
         <div className="signup-field">
           <label>Password</label>
           <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-            {/* <Lock className="w-2 h-2" style={{ position: "absolute", left: 8, color: "#9ca3af" }} /> */}
             <input
               type={showPw ? "text" : "password"}
               placeholder="Enter your password"
@@ -118,11 +241,10 @@ const navigate = useNavigate();
             <p style={{ color: "red", fontSize: 12 }}>{errors.password}</p>
           )}
         </div>
-                {/* CONFIRM PASSWORD */}
+
         <div className="signup-field">
           <label>Confirm Password</label>
           <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-            {/* <Lock className="w-4 h-4" style={{ position: "absolute", left: 8, color: "#9ca3af" }} /> */}
             <input
               type={showConfirmPw ? "text" : "password"}
               placeholder="Re-enter your password"
@@ -150,7 +272,6 @@ const navigate = useNavigate();
           )}
         </div>
 
-        {/* AGREE TO TERMS */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12 }}>
           <input
             type="checkbox"
@@ -165,7 +286,6 @@ const navigate = useNavigate();
           </label>
         </div>
 
-        {/* STAY SIGNED IN */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8, marginBottom: 12 }}>
           <input
             type="checkbox"
