@@ -46,7 +46,7 @@ function Signup() {
     try {
       const endpoint = role === "seller" ? "sellers" : "buyers";
 
-      const response = await fetch(`http://localhost:5000/api/${endpoint}`, {
+      const response = await fetch(`https://avya-backend-nomq.onrender.com/api/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
@@ -78,7 +78,7 @@ function Signup() {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:5000/api/buyers/verify-otp`, {
+      const response = await fetch(`https://avya-backend-nomq.onrender.com/api/buyers/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: otpEmail, otp }),
@@ -102,7 +102,7 @@ function Signup() {
   const handleResendOtp = async () => {
     if (resendCooldown > 0) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/buyers/resend-otp`, {
+      const response = await fetch(`https://avya-backend-nomq.onrender.com/api/buyers/resend-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: otpEmail }),

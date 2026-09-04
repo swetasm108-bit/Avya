@@ -25,7 +25,7 @@ function SignIn() {
     try {
       const endpoint = role === "seller" ? "sellers" : "buyers";
 
-      const response = await fetch(`http://localhost:5000/api/${endpoint}/login`, {
+      const response = await fetch(`https://avya-backend-nomq.onrender.com/api/${endpoint}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
