@@ -6,6 +6,7 @@
   background-color: #FDF8F4;
   border-bottom: 1px solid #EFE6DE;
   font-family: "Poppins", "Segoe UI", sans-serif;
+  position: relative;
 }
 
 /* Logo */
@@ -27,6 +28,7 @@
   font-weight: 500;
   color: #2B2523;
   transition: color 0.2s ease;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -82,4 +84,102 @@
 
 .admin-btn:hover {
   background-color: #F3EAE1;
+}
+
+/* Hamburger button — hidden on desktop */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #2B2523;
+  padding: 4px 8px;
+}
+
+/* Overlay behind mobile menu */
+.nav-overlay {
+  display: none;
+}
+
+/* ===== RESPONSIVE — TABLETS ===== */
+@media (max-width: 900px) {
+  .header {
+    padding: 12px 20px;
+  }
+
+  .header-logo-img {
+    height: 60px;
+  }
+
+  .header-nav {
+    gap: 20px;
+  }
+
+  .nav-link {
+    font-size: 14px;
+  }
+}
+
+/* ===== RESPONSIVE — PHONES (iPhone / Android) ===== */
+@media (max-width: 600px) {
+  .header {
+    padding: 10px 14px;
+  }
+
+  .header-logo-img {
+    height: 44px;
+  }
+
+  .header-actions {
+    gap: 10px;
+  }
+
+  .icon-btn {
+    font-size: 16px;
+  }
+
+  .admin-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .hamburger-btn {
+    display: block;
+  }
+
+  /* Hide nav by default, show as dropdown drawer when open */
+  .header-nav {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #FDF8F4;
+    border-bottom: 1px solid #EFE6DE;
+    padding: 16px 20px;
+    gap: 16px;
+    z-index: 20;
+  }
+
+  .header-nav.open {
+    display: flex;
+  }
+
+  .nav-link {
+    font-size: 15px;
+    padding: 8px 0;
+  }
+
+  .nav-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 10;
+  }
 }
