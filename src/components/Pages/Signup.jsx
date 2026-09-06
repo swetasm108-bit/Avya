@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import "./Signup.css";
 import { useNavigate } from "react-router-dom";
@@ -24,13 +24,13 @@ function Signup() {
   const [otpEmail, setOtpEmail] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  useState(() => {
-    if (resendCooldown <= 0) return;
-    const timer = setInterval(() => {
-      setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [resendCooldown]);
+useEffect(() => {
+  if (resendCooldown <= 0) return;
+  const timer = setInterval(() => {
+    setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+  }, 1000);
+  return () => clearInterval(timer);
+}, [resendCooldown]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
