@@ -12,7 +12,7 @@ function Header() {
   const navigate = useNavigate();
   const closeMenu = () => setMenuOpen(false);
 
-  const isLoggedIn = () => !!localStorage.getItem("token");
+  const isLoggedIn = () => !!localStorage.getItem("user");
 
   // Used for anything that needs login: Shop, Wishlist, Cart.
   // Logged in  -> let the normal navigation happen.
