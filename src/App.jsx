@@ -5,7 +5,7 @@ import Account from "./components/Pages/Account";
 import Home from "./components/Pages/Home";
 import Signup from "./components/Pages/Signup";
 import SignIn from "./components/Pages/SignIn";
-import VerifyMfa from "./VerifyMfa";
+import VerifyMfa from "./components/Pages/VerifyMfa";
 function App() {
   return (
     <>

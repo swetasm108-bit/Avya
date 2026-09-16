@@ -19,7 +19,7 @@ function VerifyMfa() {
   // If someone lands here directly without an email in state, send them back.
   useEffect(() => {
     if (!email) {
-      navigate("/login");
+      navigate("/signin");
     }
   }, [email, navigate]);
 
