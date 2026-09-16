@@ -23,37 +23,44 @@ function SignIn() {
   const navigate = useNavigate();
   
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const endpoint = role === "seller" ? "sellers" : "buyers";
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const endpoint = role === "seller" ? "sellers" : "buyers";
 
-      const response = await fetch(`${API_URL}/api/${endpoint}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    const response = await fetch(`${API_URL}/api/${endpoint}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        alert(data.error || "Login failed. Please try again.");
-        return;
-      }
-
-      localStorage.setItem("user", JSON.stringify(data));
-
-      if (stayLoggedIn) {
-        localStorage.setItem("savedCredentials", JSON.stringify({ email, password }));
-      } else {
-        localStorage.removeItem("savedCredentials");
-      }
-      navigate("/");
-    } catch (error) {
-      console.error("Login failed:", error);
-      alert("Could not connect to the server. Please try again.");
+    if (!response.ok) {
+      alert(data.error || "Login failed. Please try again.");
+      return;
     }
-  };
+
+    if (stayLoggedIn) {
+      localStorage.setItem("savedCredentials", JSON.stringify({ email, password }));
+    } else {
+      localStorage.removeItem("savedCredentials");
+    }
+
+    // Buyers now go through MFA — no token yet, redirect to OTP screen.
+    if (role === "buyer" && data.mfaRequired) {
+      navigate("/verify-mfa", { state: { email: data.email } });
+      return;
+    }
+
+    // Sellers (or any non-MFA response) log in immediately, same as before.
+    localStorage.setItem("user", JSON.stringify(data));
+    navigate("/");
+  } catch (error) {
+    console.error("Login failed:", error);
+    alert("Could not connect to the server. Please try again.");
+  }
+};
 
   return (
     

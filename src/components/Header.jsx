@@ -4,8 +4,8 @@ import "./Header.css";
 import { NavLink, useNavigate } from "react-router-dom";
 
 function Header() {
-  const [wishlistCount] = useState(2);
-  const [bagCount] = useState(2);
+  const [wishlistCount] = useState(false);
+  const [bagCount] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
